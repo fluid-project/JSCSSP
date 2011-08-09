@@ -1220,6 +1220,9 @@ CSSParser.prototype = {
 	          valueText += fn + arg;
 	          var value = new jscsspVariable(kJscsspPRIMITIVE_VALUE, aSheet);
 	          value.value = fn + arg;
+	          if (fn === "url(") {
+	              value.url = token.value;
+	          }
 	          values.push(value);
 	        }
 	        else
@@ -1406,7 +1409,7 @@ CSSParser.prototype = {
     return top + " " + right + " " + bottom + " " + left;
   },
 
-  parseCueShorthand: function(token, declarations, aAcceptPriority)
+  parseCueShorthand: function(token, aDecl, aAcceptPriority)
   {
     var before = "";
     var after = "";
@@ -1746,6 +1749,7 @@ CSSParser.prototype = {
     var bgAttachment = null;
     var bgImage = null;
     var bgPosition = null;
+    var url;
 
     while (true) {
 
@@ -1812,9 +1816,10 @@ CSSParser.prototype = {
           bgImage = token.value;
           if (token.isFunction("url(")) {
             token = this.getToken(true, true);
-            var url = this.parseURL(token); // TODO
-            if (url)
-              bgImage += url;
+            url = token.value;
+            var urlStr = this.parseURL(token); // TODO
+            if (urlStr)
+              bgImage += urlStr;
             else
               return "";
           }
@@ -1842,7 +1847,9 @@ CSSParser.prototype = {
     bgPosition = bgPosition ? bgPosition : "top left";
 
     aDecl.push(this._createJscsspDeclarationFromValue("background-color", bgColor));
-    aDecl.push(this._createJscsspDeclarationFromValue("background-image", bgImage));
+    var bgImgDecl = this._createJscsspDeclarationFromValue("background-image", bgImage);
+    bgImgDecl.values[0].url = url;
+    aDecl.push(bgImgDecl);
     aDecl.push(this._createJscsspDeclarationFromValue("background-repeat", bgRepeat));
     aDecl.push(this._createJscsspDeclarationFromValue("background-attachment", bgAttachment));
     aDecl.push(this._createJscsspDeclarationFromValue("background-position", bgPosition));
@@ -2146,7 +2153,7 @@ CSSParser.prototype = {
       var v = this.trim11(value);
       if ((v[0] == "'" && v[v.length -1] == "'") ||
           (v[0] == '"' && v[v.length -1] == '"'))
-        v = v.substring(1, v.length - 2)
+        v = v.substring(1, v.length - 1);
       var r = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?", "");
       var m = v.match(r)
       if (m) {
