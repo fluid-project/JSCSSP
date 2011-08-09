@@ -69,7 +69,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         checkUrl(rules[5], "goat.mp3");
         checkUrl(rules[6], "lizard.png");
         checkUrl(rules[7], "fish.png");
-        checkUrl(rules[8], "snake.png");
+        checkUrl(rules[8], "snake.png", 2);  // Maintenance hazard - I know that the url declaration will be the third declaration
         checkUrl(rules[9], "snail.mp3");
         checkUrl(rules[10], "penguin.png");
         checkUrl(rules[11], "../mouse.png");

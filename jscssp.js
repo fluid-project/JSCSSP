@@ -1863,7 +1863,8 @@ CSSParser.prototype = {
     var lType = null;
     var lPosition = null;
     var lImage = null;
-
+    var url;
+    
     while (true) {
 
       if (!token.isNotNull())
@@ -1894,8 +1895,9 @@ CSSParser.prototype = {
         lPosition = token.value;
       }
 
-      else if (!lImage && token.isFunction("url")) {
+      else if (!lImage && token.isFunction("url(")) {
         token = this.getToken(true, true);
+        url = token.value;
         var urlContent = this.parseURL(token);
         if (urlContent) {
           lImage = "url(" + urlContent;
@@ -1917,7 +1919,9 @@ CSSParser.prototype = {
 
     aDecl.push(this._createJscsspDeclarationFromValue("list-style-type", lType));
     aDecl.push(this._createJscsspDeclarationFromValue("list-style-position", lPosition));
-    aDecl.push(this._createJscsspDeclarationFromValue("list-style-image", lImage));
+    var imgDecl = this._createJscsspDeclarationFromValue("list-style-image", lImage);
+    imgDecl.values[0].url = url;
+    aDecl.push(imgDecl);
     return lType + " " + lPosition + " " + lImage;
   },
 
