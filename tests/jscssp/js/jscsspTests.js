@@ -58,7 +58,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var checkUrl = function (rule, expectedUrl, declIndex) {
             declIndex = declIndex || 0;
             equals(rule.error, undefined, "The rule should not have an error.");
-            equals(rule.declarations[declIndex].values[0].url, expectedUrl, "The rule should have the correct url.");            
+            var value = rule.declarations[declIndex].values[0];
+            equals(value.url, expectedUrl, "The rule should have the correct url.");
+            equals(value.value, "url('" + expectedUrl + "')", "The rule should also have the correct value.");
         };
         
         checkUrl(rules[0], "cats.png");
@@ -66,10 +68,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         checkUrl(rules[2], "hamster.png");
         checkUrl(rules[3], "cow.mp3");
         checkUrl(rules[4], "sheep.mp3");
+        checkUrl(rules[4], "sheep.mp3", 1);
         checkUrl(rules[5], "goat.mp3");
         checkUrl(rules[6], "lizard.png");
         checkUrl(rules[7], "fish.png");
-        checkUrl(rules[8], "snake.png", 2);  // Maintenance hazard - I know that the url declaration will be the third declaration
+        checkUrl(rules[8], "snake.png", 2);  
         checkUrl(rules[9], "snail.mp3");
         checkUrl(rules[10], "penguin.png");
         checkUrl(rules[11], "../mouse.png");

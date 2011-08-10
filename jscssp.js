@@ -902,7 +902,7 @@ CSSParser.prototype = {
       token = this.getToken(true, true);
       var urlContent = this.parseURL(token);
       if (urlContent) {
-        href = "url(" + urlContent;
+        href = this.assembleUrl(urlContent);
         s += " " + href;
       }
     }
@@ -1033,7 +1033,7 @@ CSSParser.prototype = {
           token = this.getToken(true, true);
           var urlContent = this.parseURL(token);
           if (urlContent) {
-            url += "url(" + urlContent;
+            url += this.assembleUrl(urlContent);
             foundURL = true;
             s += " " + urlContent;
           }
@@ -1211,8 +1211,15 @@ CSSParser.prototype = {
           }
           else
             return "";
-        }
-        else {
+        } else if (token.isFunction("url(")) {
+            token = this.getToken(true, true);
+            var urlContent = this.parseURL(token);
+            var value = new jscsspVariable(kJscsspPRIMITIVE_VALUE, aSheet);
+            value.url = urlContent;
+            value.value = this.assembleUrl(urlContent);
+            values.push(value);
+            valueText += value.value;
+        } else {
 	        var fn = token.value;
 	        token = this.getToken(false, true);
 	        var arg = this.parseFunctionArgument(token);
@@ -1220,9 +1227,6 @@ CSSParser.prototype = {
 	          valueText += fn + arg;
 	          var value = new jscsspVariable(kJscsspPRIMITIVE_VALUE, aSheet);
 	          value.value = fn + arg;
-	          if (fn === "url(") {
-	              value.url = token.value;
-	          }
 	          values.push(value);
 	        }
 	        else
@@ -1415,7 +1419,7 @@ CSSParser.prototype = {
     var after = "";
 
     var values = [];
-    var values = [];
+    
     while (true) {
 
       if (!token.isNotNull())
@@ -1440,7 +1444,7 @@ CSSParser.prototype = {
         var token = this.getToken(true, true);
         var urlContent = this.parseURL(token);
         if (urlContent)
-          values.push("url(" + urlContent);
+          values.push(this.assembleUrl(urlContent));
         else
           return "";
       }
@@ -1464,8 +1468,12 @@ CSSParser.prototype = {
         return "";
     }
     this.forgetState();
-    aDecl.push(this._createJscsspDeclarationFromValue("cue-before", before));
-    aDecl.push(this._createJscsspDeclarationFromValue("cue-after", after));
+    var beforeDecl = this._createJscsspDeclarationFromValue("cue-before", before);
+    beforeDecl.values[0].url = urlContent;  // This is making crazy assumptions
+    aDecl.push(beforeDecl);
+    var afterDecl = this._createJscsspDeclarationFromValue("cue-after", after);
+    afterDecl.values[0].url = urlContent;
+    aDecl.push(afterDecl);
     return before + " " + after;
   },
 
@@ -1813,13 +1821,11 @@ CSSParser.prototype = {
         else if (!bgImage &&
                  (token.isFunction("url(")
                   || token.isIdent("none"))) {
-          bgImage = token.value;
           if (token.isFunction("url(")) {
             token = this.getToken(true, true);
-            url = token.value;
-            var urlStr = this.parseURL(token); // TODO
-            if (urlStr)
-              bgImage += urlStr;
+            url = this.parseURL(token); // TODO
+            if (url)
+              bgImage = this.assembleUrl(url);
             else
               return "";
           }
@@ -1863,7 +1869,6 @@ CSSParser.prototype = {
     var lType = null;
     var lPosition = null;
     var lImage = null;
-    var url;
     
     while (true) {
 
@@ -1897,10 +1902,9 @@ CSSParser.prototype = {
 
       else if (!lImage && token.isFunction("url(")) {
         token = this.getToken(true, true);
-        url = token.value;
         var urlContent = this.parseURL(token);
         if (urlContent) {
-          lImage = "url(" + urlContent;
+          lImage = this.assembleUrl(urlContent);
         }
         else
           return "";
@@ -1920,7 +1924,7 @@ CSSParser.prototype = {
     aDecl.push(this._createJscsspDeclarationFromValue("list-style-type", lType));
     aDecl.push(this._createJscsspDeclarationFromValue("list-style-position", lPosition));
     var imgDecl = this._createJscsspDeclarationFromValue("list-style-image", lImage);
-    imgDecl.values[0].url = url;
+    imgDecl.values[0].url = urlContent;  // FIX THIS
     aDecl.push(imgDecl);
     return lType + " " + lPosition + " " + lImage;
   },
@@ -2164,11 +2168,15 @@ CSSParser.prototype = {
         if (m[5].match ( /[^a-z0-9\\-_\\.!~\\*'\\(\\)]/g ) )
           return null;
       }
-      return value + ")";
+      return v;
     }
     return "";
   },
 
+  assembleUrl: function (url) {
+      return "url('" + url + "')";
+  },
+  
   parseFunctionArgument: function(token)
   {
     var value = "";
