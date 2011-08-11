@@ -16,23 +16,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function () {
-    var cssText = ".cat span { font-size: 24px; }";
+
+    var parsedSheet, rules;
     
     var parseSheet = function (text, numRules) {
         var parser = new CSSParser();
-        var parsedSheet = parser.parse(text, false, true);
-        var rules = parsedSheet.cssRules;
+        parsedSheet = parser.parse(text, false, true);
+        rules = parsedSheet.cssRules;
         equals(rules.length, numRules, "There should be " + numRules + " rules in the parsed text.");
         return rules;
     };
     
     test("Parse rule with class and element selector", function () {
-        var rules = parseSheet(cssText, 1);
+        var cssText = ".cat span { font-size: 24px; }";
+        parseSheet(cssText, 1);
         var rule = rules[0];
         equals(rule.error, undefined, "The rule should not have an error.");
         equals(rule.mSelectorText, ".cat span", "The rule should have the correct selector.");
     });
-    
     
     test("Parse a sheet that contains urls", function () {
         var sheetWithUrls = 
@@ -53,7 +54,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ".racoon { background-image: url('http://racoons.ca/racoon.png'); }";
         
         
-        var rules = parseSheet(sheetWithUrls, 15);
+        parseSheet(sheetWithUrls, 15);
 
         var checkUrl = function (rule, expectedUrl, declIndex) {
             declIndex = declIndex || 0;
@@ -61,6 +62,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var value = rule.declarations[declIndex].values[0];
             equals(value.url, expectedUrl, "The rule should have the correct url.");
             equals(value.value, "url('" + expectedUrl + "')", "The rule should also have the correct value.");
+            equals(value.cssText(), value.value, "CSSText should be the same as the value");
         };
         
         checkUrl(rules[0], "cats.png");
@@ -82,4 +84,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
     });
     
+    test("Modify a parsed url", function () {
+        var sheet = ".cat { background-image: url('cats.png'); }";
+        var expectedUrl = "../../cats.png";
+        parseSheet(sheet, 1);
+        var value = rules[0].declarations[0].values[0];
+        equals(value.value, "url('cats.png')", "The rule should have the correct value.");
+        equals(value.cssText(), value.value, "CSSText and value are the same");
+
+        value.url = expectedUrl;
+        equals(value.value, "url('cats.png')", "oddly the value remains the same - do we really want this?");
+        equals(value.cssText(), "url('" + expectedUrl + "')" , "CSSText has been modified");
+        
+    });
 })();

@@ -65,6 +65,10 @@ var SI  = IS_IDENT|START_IDENT;
 var XI  = IS_IDENT            |IS_HEX_DIGIT;
 var XSI = IS_IDENT|START_IDENT|IS_HEX_DIGIT;
 
+var assembleUrl = function (url) {
+    return "url('" + url + "')";
+};
+
 function CSSScanner(aString)
 {
   this.init(aString);
@@ -902,7 +906,7 @@ CSSParser.prototype = {
       token = this.getToken(true, true);
       var urlContent = this.parseURL(token);
       if (urlContent) {
-        href = this.assembleUrl(urlContent);
+        href = assembleUrl(urlContent);
         s += " " + href;
       }
     }
@@ -1033,7 +1037,7 @@ CSSParser.prototype = {
           token = this.getToken(true, true);
           var urlContent = this.parseURL(token);
           if (urlContent) {
-            url += this.assembleUrl(urlContent);
+            url += assembleUrl(urlContent);
             foundURL = true;
             s += " " + urlContent;
           }
@@ -1216,7 +1220,7 @@ CSSParser.prototype = {
             var urlContent = this.parseURL(token);
             var value = new jscsspVariable(kJscsspPRIMITIVE_VALUE, aSheet);
             value.url = urlContent;
-            value.value = this.assembleUrl(urlContent);
+            value.value = assembleUrl(urlContent);
             values.push(value);
             valueText += value.value;
         } else {
@@ -1444,7 +1448,7 @@ CSSParser.prototype = {
         var token = this.getToken(true, true);
         var urlContent = this.parseURL(token);
         if (urlContent)
-          values.push(this.assembleUrl(urlContent));
+          values.push(assembleUrl(urlContent));
         else
           return "";
       }
@@ -1825,7 +1829,7 @@ CSSParser.prototype = {
             token = this.getToken(true, true);
             url = this.parseURL(token); // TODO
             if (url)
-              bgImage = this.assembleUrl(url);
+              bgImage = assembleUrl(url);
             else
               return "";
           }
@@ -1904,7 +1908,7 @@ CSSParser.prototype = {
         token = this.getToken(true, true);
         var urlContent = this.parseURL(token);
         if (urlContent) {
-          lImage = this.assembleUrl(urlContent);
+          lImage = assembleUrl(urlContent);
         }
         else
           return "";
@@ -2173,10 +2177,6 @@ CSSParser.prototype = {
     return "";
   },
 
-  assembleUrl: function (url) {
-      return "url('" + url + "')";
-  },
-  
   parseFunctionArgument: function(token)
   {
     var value = "";
@@ -3669,7 +3669,7 @@ jscsspVariable.prototype = {
     if (this.type == kJscsspVARIABLE_VALUE)
       return this.resolveVariable(this.name, this.parentRule, this.parentStyleSheet);
     else
-      return this.value;
+      return this.url ? assembleUrl(this.url) : this.value;
   },
 
   setCssText: function(val) {
