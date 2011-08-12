@@ -49,12 +49,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ".snail { play-during: url('snail.mp3'); }" +
             ".penguin { background-image: url(penguin.png); }" +
             ".mouse { background-image: url('../mouse.png'); }" +
+            ".chipmunk { background-image: url('../images/chipmunk.png'); }" +
             ".turtle { background-image: url(\"turtle.png\"); }" +
             ".opossum { background-image: url( 'opossum.png' ); }" +
-            ".racoon { background-image: url('http://racoons.ca/racoon.png'); }";
+            ".racoon { background-image: url('http://racoons.ca/racoon.png'); }" +
+            ".squirrel { background-image: url('http://squirrel.ca'); }";
         
         
-        parseSheet(sheetWithUrls, 15);
+        parseSheet(sheetWithUrls, 17);
 
         var checkUrl = function (rule, expectedUrl, declIndex) {
             declIndex = declIndex || 0;
@@ -78,9 +80,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         checkUrl(rules[9], "snail.mp3");
         checkUrl(rules[10], "penguin.png");
         checkUrl(rules[11], "../mouse.png");
-        checkUrl(rules[12], "turtle.png");
-        checkUrl(rules[13], "opossum.png");
-        checkUrl(rules[14], "http://racoons.ca/racoon.png");
+        checkUrl(rules[12], "../images/chipmunk.png");
+        checkUrl(rules[13], "turtle.png");
+        checkUrl(rules[14], "opossum.png");
+        checkUrl(rules[15], "http://racoons.ca/racoon.png");
+        checkUrl(rules[16], "http://squirrel.ca");
         
     });
     
