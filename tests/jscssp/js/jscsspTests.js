@@ -53,10 +53,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ".turtle { background-image: url(\"turtle.png\"); }" +
             ".opossum { background-image: url( 'opossum.png' ); }" +
             ".racoon { background-image: url('http://racoons.ca/racoon.png'); }" +
-            ".squirrel { background-image: url('http://squirrel.ca'); }";
+            ".squirrel { background-image: url('http://squirrel.ca'); }" +
+            ".beerWolf { cursor: url('/beerWolf.png'); }";
         
         
-        parseSheet(sheetWithUrls, 17);
+        parseSheet(sheetWithUrls, 18);
 
         var checkUrl = function (rule, expectedUrl, declIndex) {
             declIndex = declIndex || 0;
@@ -85,6 +86,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         checkUrl(rules[14], "opossum.png");
         checkUrl(rules[15], "http://racoons.ca/racoon.png");
         checkUrl(rules[16], "http://squirrel.ca");
+        checkUrl(rules[17], "/beerWolf.png");
         
     });
     
