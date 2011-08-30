@@ -105,7 +105,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         equals(value.cssText(), value.value, "CSSText and value are the same");
 
         value.url = expectedUrl;
-        equals(value.value, "url('cats.png')", "oddly the value remains the same - do we really want this?");
         equals(value.cssText(), "url('" + expectedUrl + "')" , "CSSText has been modified");
         
     });
