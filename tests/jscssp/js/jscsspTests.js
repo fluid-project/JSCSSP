@@ -54,10 +54,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ".opossum { background-image: url( 'opossum.png' ); }" +
             ".racoon { background-image: url('http://racoons.ca/racoon.png'); }" +
             ".squirrel { background-image: url('http://squirrel.ca'); }" +
-            ".beerWolf { cursor: url('/beerWolf.png'); }";
+            ".beerWolf { cursor: url('/beerWolf.png'); }" +
+            ".tree { cursor: url(\"http://en.wikipedia.org/wiki/File:Newton's_tree,_Botanic_Gardens,_Cambridge.JPG\"); }" +
+            ".tree2 { cursor: url(\"http://en.wikipedia.org/wiki/File:Newton\'s_tree,_Botanic_Gardens,_Cambridge.JPG\"); }" +
+            ".tree3 { cursor: url(\"http://en.wikipedia.org/wiki/File:Newton%27s_tree,_Botanic_Gardens,_Cambridge.JPG\"); }";
         
         
-        parseSheet(sheetWithUrls, 18);
+        parseSheet(sheetWithUrls, 21);
 
         var checkUrl = function (rule, expectedUrl, declIndex) {
             declIndex = declIndex || 0;
@@ -87,6 +90,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         checkUrl(rules[15], "http://racoons.ca/racoon.png");
         checkUrl(rules[16], "http://squirrel.ca");
         checkUrl(rules[17], "/beerWolf.png");
+        checkUrl(rules[18], "http://en.wikipedia.org/wiki/File:Newton's_tree,_Botanic_Gardens,_Cambridge.JPG");
+        checkUrl(rules[19], "http://en.wikipedia.org/wiki/File:Newton's_tree,_Botanic_Gardens,_Cambridge.JPG");
+        checkUrl(rules[20], "http://en.wikipedia.org/wiki/File:Newton%27s_tree,_Botanic_Gardens,_Cambridge.JPG");
         
     });
     
